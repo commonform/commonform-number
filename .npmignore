@@ -4,5 +4,6 @@
 .jscsrc
 .jshintrc
 .npmignore
+.travis.yml
 coverage
 test
