@@ -49,21 +49,30 @@ describe('numberings', function() {
   });
 
   it('maps summaries to numberings', function() {
-    var numbering = [{series: xOfy(1, 1), element: xOfy(1, 1)}];
-    expect(number(makeForm([{
-      summary: 'A',
-      form: {
-        content: ['text']
+    var first = [{series: xOfy(1, 1), element: xOfy(1, 2)}];
+    var second = [{series: xOfy(1, 1), element: xOfy(2, 2)}];
+    expect(number(makeForm([
+      {
+        summary: 'A',
+        form: {
+          content: ['text']
+        },
+      }, {
+        summary: 'A',
+        form: {
+          content: ['another']
+        }
       }
-    }])).toJS())
+    ])).toJS())
       .to.eql({
         form: {
           content: {
-            0: numbering
+            0: first,
+            1: second
           }
         },
         summaries: {
-          A: [numbering]
+          A: [first, second]
         }
       });
   });
