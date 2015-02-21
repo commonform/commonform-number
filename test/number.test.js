@@ -16,7 +16,7 @@ var makeForm = function(content) {
   });
 };
 
-describe('numberings', function() {
+describe('number', function() {
   it('returns an immutable map', function() {
     expect(Immutable.Map.isMap(number(makeForm(['test']))))
       .to.be.true();
