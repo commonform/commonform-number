@@ -4,10 +4,10 @@
     "email": "kyle@kemitchell.com",
     "url": "http://kemitchell.com/"
   },
-  "description": "contract provision numbering styles",
+  "description": "number the provisions of a contract",
   "dependencies": {
-    "lower-alpha": "^1.0.0",
-    "romanize": "^0.1.0"
+    "commonform-group-series": "^0.2.0",
+    "immutable": "^3.6.2"
   },
   "devDependencies": {
     "chai": "^1.10.0",
