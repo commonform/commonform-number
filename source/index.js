@@ -43,7 +43,9 @@ var numberings = function(form, results, keyArray, numbering) {
           subForm.get('form'),
           results.withMutations(function(results) {
             // Store numbering in the form tree.
-            results.setIn(elementKeyArray, elementNumbering);
+            results.setIn(
+              elementKeyArray.push('numbering'), elementNumbering
+            );
             // If the sub-form has a summary, store its numbering in
             // relation to that summary, too.
             if (subForm.has('summary')) {
@@ -58,7 +60,7 @@ var numberings = function(form, results, keyArray, numbering) {
               });
             }
           }),
-          elementKeyArray,
+          elementKeyArray.push('form'),
           elementNumbering
         );
       }, results);

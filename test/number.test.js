@@ -27,8 +27,12 @@ describe('number', function() {
       .to.eql({
         form: {
           content: {
-            1: [{series: xOfy(1, 1), element: xOfy(1, 2)}],
-            2: [{series: xOfy(1, 1), element: xOfy(2, 2)}]
+            1: {
+              numbering: [{series: xOfy(1, 1), element: xOfy(1, 2)}]
+            },
+            2: {
+              numbering: [{series: xOfy(1, 1), element: xOfy(2, 2)}]
+            }
           }
         },
         summaries: {}
@@ -40,8 +44,12 @@ describe('number', function() {
       .to.eql({
         form: {
           content: {
-            0: [{series: xOfy(1, 2), element: xOfy(1, 1)}],
-            2: [{series: xOfy(2, 2), element: xOfy(1, 1)}]
+            0: {
+              numbering: [{series: xOfy(1, 2), element: xOfy(1, 1)}]
+            },
+            2: {
+              numbering: [{series: xOfy(2, 2), element: xOfy(1, 1)}]
+            }
           }
         },
         summaries: {}
@@ -67,13 +75,91 @@ describe('number', function() {
       .to.eql({
         form: {
           content: {
-            0: first,
-            1: second
+            0: {numbering: first},
+            1: {numbering: second}
           }
         },
         summaries: {
           A: [first, second]
         }
       });
+  });
+
+  it('numbers nested sub-forms', function() {
+    var form = Immutable.fromJS({
+      content: [
+        'before',
+        {
+          summary: 'A',
+          form: {
+            conspicuous: 'true',
+            content: [
+              'before',
+              {
+                form: {
+                  content: ['B']
+                }
+              },
+              {
+                form: {
+                  content: ['C']
+                }
+              },
+              'between',
+              {
+                form: {
+                  content: ['D']
+                }
+              },
+              {
+                form: {
+                  content: ['E']
+                }
+              },
+              'after'
+            ]
+          }
+        },
+        'after'
+      ]
+    });
+
+    expect(
+      number(form)
+        .get('form').toJS())
+      .to.eql({
+        content: {
+          1: {
+            numbering: [
+              {series: xOfy(1, 1), element: xOfy(1, 1)}
+            ],
+            form: {
+              content: {
+                1: {
+                  numbering: [
+                    {series: xOfy(1, 1), element: xOfy(1, 1)},
+                    {series: xOfy(1, 2), element: xOfy(1, 2)}
+                  ]
+                },
+                2: {
+                  numbering: [
+                    {series: xOfy(1, 1), element: xOfy(1, 1)},
+                    {series: xOfy(1, 2), element: xOfy(2, 2)}]},
+                4: {
+                  numbering: [
+                    {series: xOfy(1, 1), element: xOfy(1, 1)},
+                    {series: xOfy(2, 2), element: xOfy(1, 2)}]},
+                5: {
+                  numbering: [
+                    {series: xOfy(1, 1), element: xOfy(1, 1)},
+                    {series: xOfy(2, 2), element: xOfy(2, 2)}
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    );
   });
 });
