@@ -1,10 +1,12 @@
 {
+  "name": "commonform-number",
+  "description": "number the provisions of a contract",
+  "version": "0.1.0",
   "author": {
     "name": "Kyle E. Mitchell",
     "email": "kyle@kemitchell.com",
     "url": "http://kemitchell.com/"
   },
-  "description": "number the provisions of a contract",
   "dependencies": {
     "commonform-group-series": "^0.2.0",
     "immutable": "^3.6.2"
@@ -27,7 +29,6 @@
   ],
   "license": "Apache-2.0",
   "main": "source/index",
-  "name": "commonform-number",
   "repository": {
     "type": "git",
     "url": "https://github.com/commonform/commonform-number.git"
@@ -39,6 +40,5 @@
     "pre-commit": "npm run lint && npm run check && npm run coverage",
     "test": "mocha",
     "travis-ci": "npm run pre-commit"
-  },
-  "version": "0.1.0"
+  }
 }
