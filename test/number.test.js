@@ -1,13 +1,25 @@
 /* jshint mocha: true */
 var Immutable = require('immutable');
 var expect = require('chai').expect;
+var validate = require('commonform-validate');
 var number = require('..');
 
-var A = {form: {content:['A']}};
-var B = {form: {content:['A']}};
+var A = {
+  inclusion: {
+    content:['A']
+  }
+};
+var B = {
+  inclusion: {
+    content:['A']
+  }
+};
 
 var xOfy = function(x, y) {
-  return {number: x, of: y};
+  return {
+    number: x,
+    of: y
+  };
 };
 
 var makeForm = function(content) {
@@ -22,20 +34,35 @@ describe('number', function() {
       .to.be.true();
   });
 
-  it('numbers sub-forms', function() {
+  it('handles valid form objects', function() {
+    expect(validate.nestedForm(makeForm([A, B])))
+      .to.be.true();
+  });
+
+  it('numbers inclusions', function() {
     expect(number(makeForm(['blah', A, B])).toJS())
       .to.eql({
         form: {
           content: {
             1: {
-              numbering: [{series: xOfy(1, 1), element: xOfy(1, 2)}]
+              numbering: [
+                {
+                  series: xOfy(1, 1),
+                  element: xOfy(1, 2)
+                }
+              ]
             },
             2: {
-              numbering: [{series: xOfy(1, 1), element: xOfy(2, 2)}]
+              numbering: [
+                {
+                  series: xOfy(1, 1),
+                  element: xOfy(2, 2)
+                }
+              ]
             }
           }
         },
-        summaries: {}
+        headings: {}
       });
   });
 
@@ -45,29 +72,49 @@ describe('number', function() {
         form: {
           content: {
             0: {
-              numbering: [{series: xOfy(1, 2), element: xOfy(1, 1)}]
+              numbering: [
+                {
+                  series: xOfy(1, 2),
+                  element: xOfy(1, 1)
+                }
+              ]
             },
             2: {
-              numbering: [{series: xOfy(2, 2), element: xOfy(1, 1)}]
+              numbering: [
+                {
+                  series: xOfy(2, 2),
+                  element: xOfy(1, 1)
+                }
+              ]
             }
           }
         },
-        summaries: {}
+        headings: {}
       });
   });
 
-  it('maps summaries to numberings', function() {
-    var first = [{series: xOfy(1, 1), element: xOfy(1, 2)}];
-    var second = [{series: xOfy(1, 1), element: xOfy(2, 2)}];
+  it('maps headings to numberings', function() {
+    var first = [
+      {
+        series: xOfy(1, 1),
+        element: xOfy(1, 2)
+      }
+    ];
+    var second = [
+      {
+        series: xOfy(1, 1),
+        element: xOfy(2, 2)
+      }
+    ];
     expect(number(makeForm([
       {
-        summary: 'A',
-        form: {
+        heading: 'A',
+        inclusion: {
           content: ['text']
         },
       }, {
-        summary: 'A',
-        form: {
+        heading: 'A',
+        inclusion: {
           content: ['another']
         }
       }
@@ -75,44 +122,51 @@ describe('number', function() {
       .to.eql({
         form: {
           content: {
-            0: {numbering: first},
-            1: {numbering: second}
+            0: {
+              numbering: first
+            },
+            1: {
+              numbering: second
+            }
           }
         },
-        summaries: {
-          A: [first, second]
+        headings: {
+          A: [
+            first,
+            second
+          ]
         }
       });
   });
 
-  it('numbers nested sub-forms', function() {
+  it('numbers nested inclusions', function() {
     var form = Immutable.fromJS({
       content: [
         'before',
         {
-          summary: 'A',
-          form: {
+          heading: 'A',
+          inclusion: {
             conspicuous: 'true',
             content: [
               'before',
               {
-                form: {
+                inclusion: {
                   content: ['B']
                 }
               },
               {
-                form: {
+                inclusion: {
                   content: ['C']
                 }
               },
               'between',
               {
-                form: {
+                inclusion: {
                   content: ['D']
                 }
               },
               {
-                form: {
+                inclusion: {
                   content: ['E']
                 }
               },
@@ -131,28 +185,59 @@ describe('number', function() {
         content: {
           1: {
             numbering: [
-              {series: xOfy(1, 1), element: xOfy(1, 1)}
+              {
+                series: xOfy(1, 1),
+                element: xOfy(1, 1)
+              }
             ],
-            form: {
+            inclusion: {
               content: {
                 1: {
                   numbering: [
-                    {series: xOfy(1, 1), element: xOfy(1, 1)},
-                    {series: xOfy(1, 2), element: xOfy(1, 2)}
+                    {
+                      series: xOfy(1, 1),
+                      element: xOfy(1, 1)
+                    },
+                    {
+                      series: xOfy(1, 2),
+                      element: xOfy(1, 2)
+                    }
                   ]
                 },
                 2: {
                   numbering: [
-                    {series: xOfy(1, 1), element: xOfy(1, 1)},
-                    {series: xOfy(1, 2), element: xOfy(2, 2)}]},
+                    {
+                      series: xOfy(1, 1),
+                      element: xOfy(1, 1)
+                    },
+                    {
+                      series: xOfy(1, 2),
+                      element: xOfy(2, 2)
+                    }
+                  ]
+                },
                 4: {
                   numbering: [
-                    {series: xOfy(1, 1), element: xOfy(1, 1)},
-                    {series: xOfy(2, 2), element: xOfy(1, 2)}]},
+                    {
+                      series: xOfy(1, 1),
+                      element: xOfy(1, 1)
+                    },
+                    {
+                      series: xOfy(2, 2),
+                      element: xOfy(1, 2)
+                    }
+                  ]
+                },
                 5: {
                   numbering: [
-                    {series: xOfy(1, 1), element: xOfy(1, 1)},
-                    {series: xOfy(2, 2), element: xOfy(2, 2)}
+                    {
+                      series: xOfy(1, 1),
+                      element: xOfy(1, 1)
+                    },
+                    {
+                      series: xOfy(2, 2),
+                      element: xOfy(2, 2)
+                    }
                   ]
                 }
               }
