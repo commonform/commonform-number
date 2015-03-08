@@ -79,4 +79,4 @@ module.exports = function(form) {
   return numberings(form, resultTemplate, list(['form']), list());
 };
 
-module.exports.version = '0.2.1';
+module.exports.version = '0.3.0';
