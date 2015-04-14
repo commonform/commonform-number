@@ -1,82 +1,62 @@
-var Immutable = require('immutable');
 var groupSeries = require('commonform-group-series');
 
-var map = Immutable.Map.bind(Immutable);
-var list = Immutable.List.bind(Immutable);
-
-var numberings = function(form, results, keyArray, numbering) {
+var number = function(form, numberings, headings, parentNumbering) {
   var seriesNumber = 0;
   var elementIndex = 0;
 
-  // Group content element into paragraphs and series.
   var groups = groupSeries(form);
 
   // Count series, to provide X of Y numberings later.
   var seriesCount = groups
-    .filter(function(group) {
-      return group.get('type') === 'series';
-    })
-    .count();
+    .filter(function(group) { return group.type === 'series'; })
+    .length;
 
-  // Generate path-to-numbering and heading-to-numbering mappings.
-  return groups.reduce(function(results, group) {
-    if (group.get('type') !== 'series') {
-      elementIndex += group.get('content').count();
-      return results;
+  // Compute numberings.
+  groups.forEach(function(group) {
+    if (group.type !== 'series') {
+      elementIndex += group.content.length;
     } else {
-      seriesNumber = seriesNumber + 1;
-      var content = group.get('content');
-      return content.reduce(function(
-        results, inclusion, inclusionIndex
-      ) {
-        var elementKeyArray = keyArray.push('content', elementIndex++);
-        var elementNumbering = numbering.push(map({
-          series: map({
-            number: seriesNumber,
-            of: seriesCount
-          }),
-          element: map({
-            number: inclusionIndex + 1,
-            of: content.count()
-          })
-        }));
-        // Recurse with the inclusion.
-        return numberings(
-          inclusion.get('inclusion'),
-          results.withMutations(function(results) {
-            // Store numbering in the tree.
-            results.setIn(
-              elementKeyArray.push('numbering'), elementNumbering
-            );
-            // If the inclusion has a heading, store its numbering in
-            // relation to that heading, too.
-            if (inclusion.has('heading')) {
-              var heading = inclusion.get('heading');
-              var headingKeyArray = ['headings', heading];
-              results.updateIn(headingKeyArray, function(numberings) {
-                // The value may be a list, to reflect multiple uses of
-                // a single heading.
-                return numberings ?
-                  numberings.push(elementNumbering) :
-                  list([elementNumbering]);
-              });
-            }
-          }),
-          elementKeyArray.push('inclusion'),
-          elementNumbering
-        );
-      }, results);
+      seriesNumber++;
+      if (!numberings.hasOwnProperty('content')) {
+        numberings.content = {};
+      }
+      var contentNumberings = numberings.content;
+      group.content.forEach(function(child, childIndex, content) {
+        var index = elementIndex++;
+
+        // Numbering
+        var childNumbering = parentNumbering.concat([{
+          series: {number: seriesNumber, of: seriesCount},
+          element: {number: childIndex + 1, of: content.length}
+        }]);
+        var childNumberings = contentNumberings[index] = {};
+        childNumberings.numbering = childNumbering;
+
+        // Heading
+        if (child.hasOwnProperty('heading')) {
+          var heading = child.heading;
+          if (!headings.hasOwnProperty(heading)) {
+            headings[heading] = [];
+          }
+          headings[heading].push(childNumbering);
+        }
+
+        // Recursion
+        var nextNumberings = {};
+        number(child.form, nextNumberings, headings, childNumbering);
+        if (nextNumberings.hasOwnProperty('content')) {
+          childNumberings.form = nextNumberings;
+        }
+      });
     }
-  }, results);
+  });
 };
 
-var resultTemplate = map({
-  form: map(),
-  headings: map()
-});
-
 module.exports = function(form) {
-  return numberings(form, resultTemplate, list(['form']), list());
+  var numberings = {};
+  var headings = {};
+  number(form, numberings, headings, []);
+  return {form: numberings, headings: headings};
 };
 
 module.exports.version = '0.3.0';

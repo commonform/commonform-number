@@ -1,172 +1,156 @@
 /* jshint mocha: true */
-var Immutable = require('immutable');
 var expect = require('chai').expect;
 var validate = require('commonform-validate');
 var number = require('..');
 
 var A = {
-  inclusion: {
+  form: {
     content:['A']
   }
 };
+
 var B = {
-  inclusion: {
+  form: {
     content:['A']
   }
 };
 
-var xOfy = function(x, y) {
-  return {
-    number: x,
-    of: y
-  };
-};
-
-var makeForm = function(content) {
-  return Immutable.fromJS({
-    content: content
-  });
-};
-
-describe('number', function() {
-  it('returns an immutable map', function() {
-    expect(Immutable.Map.isMap(number(makeForm(['test']))))
-      .to.be.true();
+describe('commonform-number', function() {
+  it('returns a map', function() {
+    expect(number({content: ['test']})).to.be.an('object');
   });
 
   it('handles valid form objects', function() {
-    expect(validate.nestedForm(makeForm([A, B])))
-      .to.be.true();
+    expect(validate.form({content: [A, B]})).to.equal(true);
   });
 
-  it('numbers inclusions', function() {
-    expect(number(makeForm(['blah', A, B])).toJS())
-      .to.eql({
-        form: {
-          content: {
-            1: {
-              numbering: [
-                {
-                  series: xOfy(1, 1),
-                  element: xOfy(1, 2)
-                }
-              ]
-            },
-            2: {
-              numbering: [
-                {
-                  series: xOfy(1, 1),
-                  element: xOfy(2, 2)
-                }
-              ]
-            }
+  it('numbers children', function() {
+    expect(
+      number({content: ['blah', A, B]})
+    ).to.eql({
+      form: {
+        content: {
+          1: {
+            numbering: [
+              {
+                series: {number: 1, of: 1},
+                element: {number: 1, of: 2}
+              }
+            ]
+          },
+          2: {
+            numbering: [
+              {
+                series: {number: 1, of: 1},
+                element: {number: 2, of: 2}
+              }
+            ]
           }
-        },
-        headings: {}
-      });
+        }
+      },
+      headings: {}
+    });
   });
 
   it('numbers non-contiguous series', function() {
-    expect(number(makeForm([A, 'blah', B])).toJS())
-      .to.eql({
-        form: {
-          content: {
-            0: {
-              numbering: [
-                {
-                  series: xOfy(1, 2),
-                  element: xOfy(1, 1)
-                }
-              ]
-            },
-            2: {
-              numbering: [
-                {
-                  series: xOfy(2, 2),
-                  element: xOfy(1, 1)
-                }
-              ]
-            }
+    expect(
+      number({content: [A, 'blah', B]})
+    )
+    .to.eql({
+      form: {
+        content: {
+          0: {
+            numbering: [
+              {
+                series: {number: 1, of: 2},
+                element: {number: 1, of: 1}
+              }
+            ]
+          },
+          2: {
+            numbering: [
+              {
+                series: {number: 2, of: 2},
+                element: {number: 1, of: 1}
+              }
+            ]
           }
-        },
-        headings: {}
-      });
+        }
+      },
+      headings: {}
+    });
   });
 
   it('maps headings to numberings', function() {
     var first = [
       {
-        series: xOfy(1, 1),
-        element: xOfy(1, 2)
+        series: {number: 1, of: 1},
+        element: {number: 1, of: 2}
       }
     ];
     var second = [
       {
-        series: xOfy(1, 1),
-        element: xOfy(2, 2)
+        series: {number: 1, of: 1},
+        element: {number: 2, of: 2}
       }
     ];
-    expect(number(makeForm([
-      {
-        heading: 'A',
-        inclusion: {
-          content: ['text']
-        },
-      }, {
-        heading: 'A',
-        inclusion: {
-          content: ['another']
-        }
-      }
-    ])).toJS())
-      .to.eql({
-        form: {
-          content: {
-            0: {
-              numbering: first
+    expect(
+      number({
+        content: [
+          {
+            heading: 'A',
+            form: {
+              content: ['text']
             },
-            1: {
-              numbering: second
+          }, {
+            heading: 'A',
+            form: {
+              content: ['another']
             }
           }
-        },
-        headings: {
-          A: [
-            first,
-            second
-          ]
+        ]
+      })
+    ).to.eql({
+      form: {
+        content: {
+          0: {numbering: first},
+          1: {numbering: second}
         }
-      });
+      },
+      headings: {
+        A: [first, second]
+      }
+    });
   });
 
-  it('numbers nested inclusions', function() {
-    var form = Immutable.fromJS({
+  it('numbers nested children', function() {
+    var form = {
       content: [
         'before',
         {
           heading: 'A',
-          inclusion: {
-            conspicuous: 'true',
+          form: {
+            conspicuous: 'yes',
             content: [
               'before',
               {
-                inclusion: {
+                form: {
                   content: ['B']
                 }
               },
               {
-                inclusion: {
+                form: {
                   content: ['C']
                 }
               },
               'between',
               {
-                inclusion: {
+                form: {
                   content: ['D']
                 }
               },
               {
-                inclusion: {
+                form: {
                   content: ['E']
                 }
               },
@@ -176,75 +160,73 @@ describe('number', function() {
         },
         'after'
       ]
-    });
+    };
 
     expect(
-      number(form)
-        .get('form').toJS())
-      .to.eql({
-        content: {
-          1: {
-            numbering: [
-              {
-                series: xOfy(1, 1),
-                element: xOfy(1, 1)
-              }
-            ],
-            inclusion: {
-              content: {
-                1: {
-                  numbering: [
-                    {
-                      series: xOfy(1, 1),
-                      element: xOfy(1, 1)
-                    },
-                    {
-                      series: xOfy(1, 2),
-                      element: xOfy(1, 2)
-                    }
-                  ]
-                },
-                2: {
-                  numbering: [
-                    {
-                      series: xOfy(1, 1),
-                      element: xOfy(1, 1)
-                    },
-                    {
-                      series: xOfy(1, 2),
-                      element: xOfy(2, 2)
-                    }
-                  ]
-                },
-                4: {
-                  numbering: [
-                    {
-                      series: xOfy(1, 1),
-                      element: xOfy(1, 1)
-                    },
-                    {
-                      series: xOfy(2, 2),
-                      element: xOfy(1, 2)
-                    }
-                  ]
-                },
-                5: {
-                  numbering: [
-                    {
-                      series: xOfy(1, 1),
-                      element: xOfy(1, 1)
-                    },
-                    {
-                      series: xOfy(2, 2),
-                      element: xOfy(2, 2)
-                    }
-                  ]
-                }
+      number(form).form
+    ).to.eql({
+      content: {
+        1: {
+          numbering: [
+            {
+              series: {number: 1, of: 1},
+              element: {number: 1, of: 1}
+            }
+          ],
+          form: {
+            content: {
+              1: {
+                numbering: [
+                  {
+                    series: {number: 1, of: 1},
+                    element: {number: 1, of: 1}
+                  },
+                  {
+                    series: {number: 1, of: 2},
+                    element: {number: 1, of: 2}
+                  }
+                ]
+              },
+              2: {
+                numbering: [
+                  {
+                    series: {number: 1, of: 1},
+                    element: {number: 1, of: 1}
+                  },
+                  {
+                    series: {number: 1, of: 2},
+                    element: {number: 2, of: 2}
+                  }
+                ]
+              },
+              4: {
+                numbering: [
+                  {
+                    series: {number: 1, of: 1},
+                    element: {number: 1, of: 1}
+                  },
+                  {
+                    series: {number: 2, of: 2},
+                    element: {number: 1, of: 2}
+                  }
+                ]
+              },
+              5: {
+                numbering: [
+                  {
+                    series: {number: 1, of: 1},
+                    element: {number: 1, of: 1}
+                  },
+                  {
+                    series: {number: 2, of: 2},
+                    element: {number: 2, of: 2}
+                  }
+                ]
               }
             }
           }
         }
       }
-    );
+    });
   });
 });
