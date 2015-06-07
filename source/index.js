@@ -58,5 +58,3 @@ module.exports = function(form) {
   number(form, numberings, headings, []);
   return {form: numberings, headings: headings};
 };
-
-module.exports.version = '0.4.0';
