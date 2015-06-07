@@ -1,232 +1,163 @@
-/* jshint mocha: true */
-var expect = require('chai').expect;
 var validate = require('commonform-validate');
+
 var number = require('..');
 
 var A = {
   form: {
-    content:['A']
-  }
-};
+    content:['A']}};
 
 var B = {
   form: {
-    content:['A']
-  }
-};
+    content:['A']}};
 
-describe('commonform-number', function() {
-  it('returns a map', function() {
-    expect(number({content: ['test']})).to.be.an('object');
-  });
+require('tape')('commonform-number', function(test) {
+  test.equal(
+    typeof number({content: ['test']}),
+    'object',
+    'returns a map');
 
-  it('handles valid form objects', function() {
-    expect(validate.form({content: [A, B]})).to.equal(true);
-  });
+  test.equal(
+    validate.form({content: [A, B]}),
+    true,
+    'handles valid form objects');
 
-  it('numbers children', function() {
-    expect(
-      number({content: ['blah', A, B]})
-    ).to.eql({
+  test.deepEqual(
+    number({content: ['blah', A, B]}),
+    {
       form: {
         content: {
           1: {
             numbering: [
               {
                 series: {number: 1, of: 1},
-                element: {number: 1, of: 2}
-              }
-            ]
-          },
+                element: {number: 1, of: 2}}]},
           2: {
             numbering: [
               {
                 series: {number: 1, of: 1},
-                element: {number: 2, of: 2}
-              }
-            ]
-          }
-        }
-      },
-      headings: {}
-    });
-  });
+                element: {number: 2, of: 2}}]}}},
+      headings: {}},
+    'numbers children');
 
-  it('numbers non-contiguous series', function() {
-    expect(
-      number({content: [A, 'blah', B]})
-    )
-    .to.eql({
+  test.deepEqual(
+    number({content: [A, 'blah', B]}),
+    {
       form: {
         content: {
           0: {
             numbering: [
               {
                 series: {number: 1, of: 2},
-                element: {number: 1, of: 1}
-              }
-            ]
-          },
+                element: {number: 1, of: 1}}]},
           2: {
             numbering: [
               {
                 series: {number: 2, of: 2},
-                element: {number: 1, of: 1}
-              }
-            ]
-          }
-        }
-      },
-      headings: {}
-    });
-  });
+                element: {number: 1, of: 1}}]}}},
+      headings: {}},
+    'numbers non-contiguous series');
 
-  it('maps headings to numberings', function() {
-    var first = [
-      {
-        series: {number: 1, of: 1},
-        element: {number: 1, of: 2}
-      }
-    ];
-    var second = [
-      {
-        series: {number: 1, of: 1},
-        element: {number: 2, of: 2}
-      }
-    ];
-    expect(
-      number({
-        content: [
-          {
-            heading: 'A',
-            form: {
-              content: ['text']
-            },
-          }, {
-            heading: 'A',
-            form: {
-              content: ['another']
-            }
-          }
-        ]
-      })
-    ).to.eql({
-      form: {
-        content: {
-          0: {numbering: first},
-          1: {numbering: second}
-        }
-      },
-      headings: {
-        A: [first, second]
-      }
-    });
-  });
+  var first = [
+    {
+      series: {number: 1, of: 1},
+      element: {number: 1, of: 2}}];
 
-  it('numbers nested children', function() {
-    var form = {
+  var second = [
+    {
+      series: {number: 1, of: 1},
+      element: {number: 2, of: 2}}];
+
+  test.deepEqual(
+    number({
       content: [
-        'before',
         {
           heading: 'A',
           form: {
-            conspicuous: 'yes',
-            content: [
-              'before',
-              {
-                form: {
-                  content: ['B']
-                }
-              },
-              {
-                form: {
-                  content: ['C']
-                }
-              },
-              'between',
-              {
-                form: {
-                  content: ['D']
-                }
-              },
-              {
-                form: {
-                  content: ['E']
-                }
-              },
-              'after'
-            ]
-          }
-        },
-        'after'
-      ]
-    };
+            content: ['text']}},
+        {
+          heading: 'A',
+          form: {
+            content: ['another']}}]}),
+    {
+      form: {
+        content: {
+          0: {numbering: first},
+          1: {numbering: second}}},
+      headings: {
+        A: [first, second]}},
+    'maps headings to numberings');
 
-    expect(
-      number(form).form
-    ).to.eql({
+  var form = {
+    content: [
+      'before',
+      {
+        heading: 'A',
+        form: {
+          conspicuous: 'yes',
+          content: [
+            'before',
+            {
+              form: {
+                content: ['B']}},
+            {
+              form: {
+                content: ['C']}},
+            'between',
+            {
+              form: {
+                content: ['D']}
+            },
+            {
+              form: {
+                content: ['E']}},
+            'after']}
+      },
+      'after']};
+
+  test.deepEqual(
+    number(form).form,
+    {
       content: {
         1: {
           numbering: [
             {
               series: {number: 1, of: 1},
-              element: {number: 1, of: 1}
-            }
-          ],
+              element: {number: 1, of: 1}}],
           form: {
             content: {
               1: {
                 numbering: [
                   {
                     series: {number: 1, of: 1},
-                    element: {number: 1, of: 1}
-                  },
+                    element: {number: 1, of: 1}},
                   {
                     series: {number: 1, of: 2},
-                    element: {number: 1, of: 2}
-                  }
-                ]
-              },
+                    element: {number: 1, of: 2}}]},
               2: {
                 numbering: [
                   {
                     series: {number: 1, of: 1},
-                    element: {number: 1, of: 1}
-                  },
+                    element: {number: 1, of: 1}},
                   {
                     series: {number: 1, of: 2},
-                    element: {number: 2, of: 2}
-                  }
-                ]
-              },
+                    element: {number: 2, of: 2}}]},
               4: {
                 numbering: [
                   {
                     series: {number: 1, of: 1},
-                    element: {number: 1, of: 1}
-                  },
+                    element: {number: 1, of: 1}},
                   {
                     series: {number: 2, of: 2},
-                    element: {number: 1, of: 2}
-                  }
-                ]
-              },
+                    element: {number: 1, of: 2}}]},
               5: {
                 numbering: [
                   {
                     series: {number: 1, of: 1},
-                    element: {number: 1, of: 1}
-                  },
+                    element: {number: 1, of: 1}},
                   {
                     series: {number: 2, of: 2},
-                    element: {number: 2, of: 2}
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-    });
-  });
+                    element: {number: 2, of: 2}}]}}}}}},
+    'numbers nested children');
+
+  test.end();
 });
