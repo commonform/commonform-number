@@ -8,9 +8,8 @@
     "commonform-group-series": "~0.4.0"
   },
   "devDependencies": {
-    "commonform-validate": "~0.4.0",
-    "covert": "~1.1.0",
-    "tape": "~4.0.0"
+    "defence-cli": "~1.0.1",
+    "replace-require-self": "~1.0.0"
   },
   "homepage": "https://commonform.github.io",
   "keywords": [
@@ -27,8 +26,6 @@
   },
   "repository": "commonform/commonform-number",
   "scripts": {
-    "coverage": "covert test/*.test.js",
-    "precommit": "npm run coverage",
-    "test": "tape test/*.test.js"
+    "test": "defence README.md | replace-require-self | node"
   }
 }
