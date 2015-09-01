@@ -19,9 +19,6 @@
     "numbering"
   ],
   "license": "Apache-2.0",
-  "peerDependencies": {
-    "commonform": "1.x"
-  },
   "repository": "commonform/commonform-number",
   "scripts": {
     "test": "defence README.md | replace-require-self | node"
