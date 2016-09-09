@@ -24,8 +24,10 @@ var number = function (form, numberings, headings, parentNumbering) {
 
   // Count series, to provide X of Y numberings later.
   var seriesCount = groups
-    .filter(function (group) { return group.type === 'series' })
-    .length
+  .filter(function (group) {
+    return group.type === 'series'
+  })
+  .length
 
   // Compute numberings.
   groups.forEach(function (group) {
