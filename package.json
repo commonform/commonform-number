@@ -3,6 +3,9 @@
   "description": "number the provisions of a contract",
   "version": "0.4.2",
   "author": "Kyle E. Mitchell <kyle@kemitchell.com> (http://kemitchell.com)",
+  "files": [
+    "index.js"
+  ],
   "dependencies": {
     "commonform-group-series": "~0.4.0"
   },
