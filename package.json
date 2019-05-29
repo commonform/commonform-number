@@ -1,7 +1,7 @@
 {
   "name": "commonform-number",
   "description": "number the provisions of a contract",
-  "version": "0.4.3",
+  "version": "1.0.0",
   "author": "Kyle E. Mitchell <kyle@kemitchell.com> (http://kemitchell.com)",
   "files": [
     "index.js"
