@@ -1,4 +1,5 @@
 var groupSeries = require('commonform-group-series')
+var has = require('has')
 
 var number = function (form, numberings, headings, parentNumbering) {
   var seriesNumber = 0
@@ -19,7 +20,7 @@ var number = function (form, numberings, headings, parentNumbering) {
       elementIndex += group.content.length
     } else {
       seriesNumber++
-      if (!numberings.hasOwnProperty('content')) {
+      if (!has(numberings, 'content')) {
         numberings.content = {}
       }
       var contentNumberings = numberings.content
@@ -41,9 +42,9 @@ var number = function (form, numberings, headings, parentNumbering) {
         childNumberings.numbering = childNumbering
 
         // Heading
-        if (child.hasOwnProperty('heading')) {
+        if (has(child, 'heading')) {
           var heading = child.heading
-          if (!headings.hasOwnProperty(heading)) {
+          if (!has(headings, heading)) {
             headings[heading] = []
           }
           headings[heading].push(childNumbering)
@@ -52,7 +53,7 @@ var number = function (form, numberings, headings, parentNumbering) {
         // Recursion
         var nextNumberings = {}
         number(child.form, nextNumberings, headings, childNumbering)
-        if (nextNumberings.hasOwnProperty('content')) {
+        if (has(nextNumberings, 'content')) {
           childNumberings.form = nextNumberings
         }
       })
