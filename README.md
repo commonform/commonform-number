@@ -190,4 +190,31 @@ assert.deepEqual(
   },
   'numbers nested children'
 )
+
+assert.deepEqual(
+  number({
+    content: [
+      {
+        repository: 'commonform.org',
+        publisher: 'test',
+        project: 'test',
+        edition: '1e',
+        substitutions: { terms: {}, headings: {} }
+      }
+    ]
+  }).form,
+  {
+    content: {
+      0: {
+        numbering: [
+          {
+            series: {number: 1, of: 1},
+            element: {number: 1, of: 1}
+          }
+        ]
+      }
+    }
+  },
+  'numbers component'
+)
 ```

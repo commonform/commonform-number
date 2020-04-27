@@ -51,6 +51,7 @@ var number = function (form, numberings, headings, parentNumbering) {
         }
 
         // Recursion
+        if (has(child, 'repository')) return
         var nextNumberings = {}
         number(child.form, nextNumberings, headings, childNumbering)
         if (has(nextNumberings, 'content')) {
