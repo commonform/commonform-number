@@ -1,5 +1,6 @@
 var groupSeries = require('commonform-group-series')
 var has = require('has')
+var predicate = require('commonform-predicate')
 
 var number = function (form, numberings, headings, parentNumbering) {
   var seriesNumber = 0
@@ -51,7 +52,7 @@ var number = function (form, numberings, headings, parentNumbering) {
         }
 
         // Recursion
-        if (has(child, 'repository')) return
+        if (predicate.component(child)) return
         var nextNumberings = {}
         number(child.form, nextNumberings, headings, childNumbering)
         if (has(nextNumberings, 'content')) {

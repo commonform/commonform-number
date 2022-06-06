@@ -195,10 +195,8 @@ assert.deepEqual(
   number({
     content: [
       {
-        repository: 'commonform.org',
-        publisher: 'test',
-        project: 'test',
-        edition: '1e',
+        component: 'https://example.com/component',
+        version: '1.0.0',
         substitutions: { terms: {}, headings: {} }
       }
     ]

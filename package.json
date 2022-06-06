@@ -7,7 +7,8 @@
     "index.js"
   ],
   "dependencies": {
-    "commonform-group-series": "^3.0.0"
+    "commonform-group-series": "^3.0.0",
+    "commonform-predicate": "^4.0.0"
   },
   "devDependencies": {
     "defence-cli": "^3.0.1",
